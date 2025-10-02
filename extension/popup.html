@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatAp Agent Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      min-height: 500px;
+      max-height: 600px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      overflow-y: auto;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #667eea;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    /* Master Toggle */
+    .master-toggle {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .master-toggle-label {
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .master-toggle-status {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* Settings Section */
+    .settings-section {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .settings-section.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: border-color 0.2s ease;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input[type="text"]::placeholder {
+      color: #bbb;
+    }
+
+    /* Toggle Switch */
+    .toggle-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .toggle-group:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .toggle-desc {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    /* Switch Styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.3s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Buttons */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-reset {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .btn-reset:hover {
+      background: #e0e0e0;
+    }
+
+    /* Status Message */
+    .status-message {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .status-message.show {
+      opacity: 1;
+    }
+
+    .status-message.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-message.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Range Slider */
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: none;
+    }
+
+    .range-value {
+      display: inline-block;
+      min-width: 40px;
+      text-align: right;
+      font-weight: 600;
+      color: #667eea;
+      font-size: 13px;
+    }
+
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ WhatAp Agent Settings</h1>
+    <div class="subtitle">Configure WhatAp Browser Agent</div>
+
+    <!-- Master Enable/Disable Toggle -->
+    <div class="master-toggle">
+      <div>
+        <div class="master-toggle-label">Agent Status</div>
+        <div class="master-toggle-status" id="statusText">Active on all pages</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="enableAgent" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Settings Form -->
+    <div class="settings-section" id="settingsSection">
+      <div class="form-group">
+        <label for="projectAccessKey">Project Access Key</label>
+        <input
+          type="text"
+          id="projectAccessKey"
+          placeholder="x43e420hjvmv6-z5qbtlae2q1s0j-z76as5gsgdcp02"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="pcode">Project Code (pcode)</label>
+        <input
+          type="number"
+          id="pcode"
+          placeholder="3524"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="proxyBaseUrl">Proxy Base URL</label>
+        <input
+          type="text"
+          id="proxyBaseUrl"
+          placeholder="https://rumote.whatap-mobile-agent.io/"
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Sample Rate: <span class="range-value" id="sampleRateValue">100%</span></label>
+        <div class="range-group">
+          <input
+            type="range"
+            id="sampleRate"
+            min="0"
+            max="100"
+            value="100"
+            step="1"
+          >
+        </div>
+      </div>
+
+      <div class="toggle-group">
+        <div>
+          <div class="toggle-label">XHR Tracing</div>
+          <div class="toggle-desc">Track XHR/Fetch requests</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="xhrTracing" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-group">
+        <div>
+          <div class="toggle-label">Agent Error Tracking</div>
+          <div class="toggle-desc">Capture JavaScript errors</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="agentError" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="form-group" style="margin-top: 20px;">
+        <label for="blacklist">🚫 Blacklist Domains (one per line)</label>
+        <textarea
+          id="blacklist"
+          rows="5"
+          placeholder="github.com&#10;gitlab.com&#10;stackoverflow.com"
+          style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 12px; font-family: 'Monaco', 'Courier New', monospace; resize: vertical; transition: border-color 0.2s ease;"
+        ></textarea>
+        <div style="font-size: 11px; color: #999; margin-top: 6px;">
+          ⚠️ Sites with strict CSP (worker-src, connect-src) must be blacklisted
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-save" id="saveBtn">💾 Save Settings</button>
+        <button class="btn-reset" id="resetBtn">🔄 Reset</button>
+      </div>
+
+      <div class="status-message" id="statusMessage"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
